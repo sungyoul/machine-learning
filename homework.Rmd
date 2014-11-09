@@ -48,7 +48,11 @@ table(prediction,testingdata$classe)
 
 
 # Result 
+```{r}
 answers <- predict(modelFit,newdata=testing)
 test <- list('problem_id'=testing$problem_id,'classe'=answers)
 final_result <- as.data.frame(test)
 print(final_result)
+```
+
+
