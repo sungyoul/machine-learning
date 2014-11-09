@@ -6,7 +6,7 @@ output: html_document
 ---
 
 
-# Read a training and testing set and cleaning
+# Read a training and testing set, cleaning
 
 ```{r}
 library(kernlab)
