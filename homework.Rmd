@@ -1,0 +1,54 @@
+---
+title: "ml_project"
+author: "sungyoul park"
+date: "2014년 11월 8일"
+output: html_document
+---
+
+
+# Read a training and testing set and cleaning
+
+```{r}
+library(kernlab)
+library(caret)
+
+train= read.csv("~/workspace/ml/pml-training.csv",header = TRUE,
+                   stringsAsFactors =FALSE, na.strings = c("NA","NaN"," ","#DIV/0!"))
+test = read.csv("~/workspace/ml/pml-testing.csv",header = TRUE,
+                   stringsAsFactors =FALSE, na.strings = c("NA","NaN"," ","#DIV/0!"))
+
+train$classe <- as.factor(train$classe)
+test$problem_id <- as.factor(test$problem_id)
+
+training <- train[,colSums(is.na(train)) < 15000]
+testing <- test[,colSums(is.na(test)) < 20]
+
+training <-training[,-c(1:6)]
+testing <- testing[,-c(1:6)]
+```
+
+# paritioning the training
+```{r}
+intrain <-createDataPartition(y = training$classe,p = 0.6,list = FALSE)
+trainingdata <- training[intrain,]
+testingdata <- training[-intrain,]
+```
+
+#
+```{r}
+set.seed(1971)
+fitControl <- trainControl(method="cv",number=3,repeats=2,verboseIter=TRUE,allowParallel = TRUE)
+ptm <- proc.time()
+modelFit <- train(classe ~., data=trainingdata,method="rf",verbose=FALSE,trControl = fitControl)
+print(proc.time()-ptm)
+prediction <- predict(modelFit, newdata = testingdata)
+confusionMatrix(prediction,testingdata$classe)
+table(prediction,testingdata$classe)
+```
+
+
+# Result 
+answers <- predict(modelFit,newdata=testing)
+test <- list('problem_id'=testing$problem_id,'classe'=answers)
+final_result <- as.data.frame(test)
+print(final_result)
