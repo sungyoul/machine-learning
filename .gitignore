@@ -1,3 +1,6 @@
-.Rproj.user
+caret1.R
+*.html
+*.Rproj
+.Rdata
 .Rhistory
-.RData
+.Rproj.user
