@@ -34,7 +34,7 @@ trainingdata <- training[intrain,]
 testingdata <- training[-intrain,]
 ```
 
-#
+# Modeling with random forest
 ```{r}
 set.seed(1971)
 fitControl <- trainControl(method="cv",number=3,repeats=2,verboseIter=TRUE,allowParallel = TRUE)
