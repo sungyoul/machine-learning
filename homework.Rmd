@@ -1,53 +1,62 @@
 ---
-title: "ml_project"
+title: "Pratical Machine Learning project"
 author: "sungyoul park"
-date: "2014년 11월 8일"
 output: html_document
 ---
+***
+###Step 1: Data reading and cleaning 
 
+* In data sets,there are lot's of invalid values such as #DIV/O! and  alomst empty values in some of covariantes which don't helpful to analysis
+* Replacing invalid value as 'Na' and exclude covariates which have empty value more than 15000  
 
-# Read a training and testing set, cleaning
-
-```{r}
+```{r, message=FALSE}
 library(kernlab)
 library(caret)
 
-train= read.csv("~/workspace/ml/pml-training.csv",header = TRUE,
-                   stringsAsFactors =FALSE, na.strings = c("NA","NaN"," ","#DIV/0!"))
-test = read.csv("~/workspace/ml/pml-testing.csv",header = TRUE,
-                   stringsAsFactors =FALSE, na.strings = c("NA","NaN"," ","#DIV/0!"))
+read.training= read.csv("~/workspace/ml/pml-training.csv",header = TRUE,
+                   stringsAsFactors =FALSE, na.strings = c("NA","NaN"," ", "#DIV/0!"))
+read.testing = read.csv("~/workspace/ml/pml-testing.csv",header = TRUE,
+                   stringsAsFactors =FALSE, na.strings = c("NA","NaN"," ", "#DIV/0!"))
 
-train$classe <- as.factor(train$classe)
-test$problem_id <- as.factor(test$problem_id)
+read.training$classe <- as.factor(read.training$classe)
+read.testing$problem_id <- as.factor(read.testing$problem_id)
 
-training <- train[,colSums(is.na(train)) < 15000]
-testing <- test[,colSums(is.na(test)) < 20]
+training <- read.training[,colSums(is.na(read.training)) < 15000]
+testing <- read.testing[,colSums(is.na(read.testing)) < 20]
 
-training <-training[,-c(1:6)]
-testing <- testing[,-c(1:6)]
 ```
 
-# paritioning the training
+###Step 2:  Paritioning training data 
+
+* Excluding appraently irrevalent covariates("X","user_name","raw_timestamp_part_1","raw_timestamp_part_2", "cvtd_timestamp","new_window",num_window") to reduce processing time and avoide overfiting issue
+* Partition training with training.classe and testing.classe as 7:3 ratio
+
 ```{r}
-intrain <-createDataPartition(y = training$classe,p = 0.6,list = FALSE)
-trainingdata <- training[intrain,]
-testingdata <- training[-intrain,]
+training <-training[,-c(1:7)]
+testing <- testing[,-c(1:7)]
+
+intrain <-createDataPartition(y = training$classe,p = 0.7,list = FALSE)
+training.classe <- training[intrain,]
+testing.classe <- training[-intrain,]
 ```
 
-# Modeling with random forest
-```{r}
+### Step 3: Fit modeling and validation
+
+*Fit Modeling with **random forest** and **3-fold cross validations** to predict all other prdictors
+*Apply this model to testing.classe dataset to verify the model fittness and this Random forest model's accurary is almost closed to 1 (0.9966)
+```{r,results='hide'}
 set.seed(1971)
-fitControl <- trainControl(method="cv",number=3,repeats=2,verboseIter=TRUE,allowParallel = TRUE)
-ptm <- proc.time()
-modelFit <- train(classe ~., data=trainingdata,method="rf",verbose=FALSE,trControl = fitControl)
-print(proc.time()-ptm)
-prediction <- predict(modelFit, newdata = testingdata)
-confusionMatrix(prediction,testingdata$classe)
-table(prediction,testingdata$classe)
+fitControl <- trainControl(method="cv",number=3,verboseIter=TRUE,allowParallel = TRUE)
+modelFit <- train(classe ~., data=training.classe,method="rf",verbose=FALSE,trControl = fitControl)
+```
+```{r,message=FALSE}
+prediction <- predict(modelFit, newdata = testing.classe)
+confusionMatrix(prediction,testing.classe$classe)
 ```
 
 
-# Result 
+### Final Step: prediction 
+* predict the classe type of 20 person in test data set and display the result
 ```{r}
 answers <- predict(modelFit,newdata=testing)
 test <- list('problem_id'=testing$problem_id,'classe'=answers)
