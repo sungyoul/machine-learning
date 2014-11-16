@@ -41,8 +41,7 @@ testing.classe <- training[-intrain,]
 ```
 
 ### Step 3: Fit modeling and validation
-
-*Fit Modeling with **random forest** and **3-fold cross validations** to predict all other prdictors
+*Fit Modeling with __random forest__ and __3-fold cross validations__ to predict all other prdictors
 *Apply this model to testing.classe dataset to verify the model fittness and this Random forest model's accurary is almost closed to 1 (0.9966)
 ```{r,results='hide'}
 set.seed(1971)
