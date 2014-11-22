@@ -1,5 +1,4 @@
-caret1.R
-*.html
+*.R
 *.Rproj
 .Rdata
 .Rhistory
