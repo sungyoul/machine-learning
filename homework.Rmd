@@ -4,6 +4,9 @@ author: "sungyoul park"
 output: html_document
 ---
 ***
+##  Practical Machine Learning Course: Project Report 
+* Gib hub repo: https://github.com/sungyoul/machine-learning
+
 ###Step 1: Data reading and cleaning 
 
 * In data sets,there are lot's of invalid values such as #DIV/O! and  alomst empty values in some of covariantes which don't helpful to analysis
@@ -13,9 +16,10 @@ output: html_document
 library(kernlab)
 library(caret)
 
-read.training= read.csv("~/workspace/ml/pml-training.csv",header = TRUE,
+ read.training = read.csv(url("http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"),header = TRUE,
                    stringsAsFactors =FALSE, na.strings = c("NA","NaN"," ", "#DIV/0!"))
-read.testing = read.csv("~/workspace/ml/pml-testing.csv",header = TRUE,
+
+read.testing = read.csv(url("http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"),header = TRUE,
                    stringsAsFactors =FALSE, na.strings = c("NA","NaN"," ", "#DIV/0!"))
 
 read.training$classe <- as.factor(read.training$classe)
